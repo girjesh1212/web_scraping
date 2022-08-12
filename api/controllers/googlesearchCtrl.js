@@ -3,6 +3,8 @@ const cheerio = require('cheerio');
 const axios = require('axios');
 const puppeteer = require('puppeteer');
 const spawn = require("child_process").spawn;
+var readline = require('linebyline');
+const stringSimilarity = require("string-similarity");
 
 const validateInput = require('../../validation/search');
 
@@ -21,28 +23,32 @@ module.exports.scrape = async (req, res) => {
 }
 
 
-
+// If getExtraData is used cleverly, it can give very useful text that appears below the links in google search results.
 const scrapeGoogle = async (query) => {
     const url = `https://www.google.com/search?q=${query}`;
     let links = [];
     try {
+
+        await takeScreenShot(url);
+        await extractText();
+
         let httpResponse = await axios.get(url);
         let $ = cheerio.load(httpResponse.data);
         let linkObjects = $('a'); // get all hyperlinks
 
-
         for (let i = 0; i < linkObjects.length; i++) {
             const element = linkObjects[i];
             const ref = $(element).attr('href').toString();
+            var text = $(element).text().substring(0, $(element).text().indexOf('›'));
 
             if (ref.includes('url?q=https://')) {
                 var link = ref.substring(ref.indexOf("=") + 1, ref.indexOf("&"));
+                // const extraData = await getExtraData(text);
+                // links.push({ link, extraData });
                 links.push(link);
             }
         }
 
-        await takeScreenShot(url);
-        await extractText();
     } catch (e) {
         console.log('error in axios' + e);
     }
@@ -110,5 +116,30 @@ const extractText = () => {
         });
 
     });
+}
+
+const getExtraData = (text) => {
+    return new Promise((resolve, reject) => {
+        // console.log('Extracting more data');
+        let similarity = 0;
+        var output = '';
+        rl = readline(__dirname + '/ocr.txt');
+        rl.on('line', function (line, lineCount, byteCount) {
+            if (similarity > 0.6) {
+                output = line;
+                similarity = 0;
+            }
+            similarity = stringSimilarity.compareTwoStrings(line, text);
+        })
+            .on('error', function (e) {
+                reject(e);
+                // something went wrong
+            });
+        rl.on('close', function () {
+            // console.log('Extra data extracted!');
+            resolve(output);
+        })
+    })
+
 }
 
