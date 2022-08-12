@@ -1,0 +1,29 @@
+{
+  "name": "web_scraping",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/girjesh1212/web_scraping.git"
+  },
+  "author": "Girjesh Singh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/girjesh1212/web_scraping/issues"
+  },
+  "homepage": "https://github.com/girjesh1212/web_scraping#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19",
+    "puppeteer": "^16.1.0",
+    "validator": "^13.7.0"
+  }
+}

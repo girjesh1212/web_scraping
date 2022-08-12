@@ -1,0 +1,4 @@
+node_modules
+package-lock.json
+/api/controllers/ocr.py
+/api/controllers/ocr.txt
